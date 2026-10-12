@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useClientes } from "../lib/api";
-import { ETAPAS, FASES } from "../lib/etapas";
+import { ETAPAS, FASES, etapa, type Fase } from "../lib/etapas";
 import type { Cliente } from "../lib/types";
-import { PrazoChip, hoje } from "../components/ui";
+import { PrazoChip, dataCurta, hoje } from "../components/ui";
 import { mensagemErro } from "../lib/supabase";
 
 function lerPref(k: string, padrao: string) {
@@ -34,6 +34,10 @@ export default function Funil() {
   const [teste, setTeste] = useState(() => lerPref("op-teste", "1") === "1");
   const [resp, setResp] = useState(() => lerPref("op-resp", ""));
   const [busca, setBusca] = useState("");
+  const [modo, setModo] = useState(() => lerPref("op-modo", "quadro"));
+  const [fase, setFase] = useState<Fase>(() => lerPref("op-fase", "venda") as Fase);
+  const mudarModo = (m: string) => { setModo(m); gravarPref("op-modo", m); };
+  const mudarFase = (f: Fase) => { setFase(f); gravarPref("op-fase", f); };
 
   if (q.isLoading) return <p className="sub">Carregando…</p>;
   if (q.error) return <div className="erro">{mensagemErro(q.error)}</div>;
@@ -61,30 +65,68 @@ export default function Funil() {
         </select>
         <label className="chk"><input type="checkbox" id="filtro-teste" checked={teste} onChange={(e) => { setTeste(e.target.checked); gravarPref("op-teste", e.target.checked ? "1" : "0"); }} /> Mostrar clientes de teste</label>
       </div>
-      <div className="board-wrap" tabIndex={0} aria-label="Quadro do funil">
-        <div className="board">
-          {FASES.map((fa) => {
-            const cols = ETAPAS.filter((e) => e.fase === fa.k);
-            const n = lista.filter((c) => cols.some((e) => e.k === c.etapa)).length;
-            return (
-              <section className="fase" key={fa.k}>
-                <div className="fase-nome">{fa.nome}<em>{fa.desc} · {n}</em></div>
-                <div className="cols">
-                  {cols.map((e) => {
-                    const cs = lista.filter((c) => c.etapa === e.k);
-                    return (
-                      <div className="col" key={e.k}>
-                        <h3><span>{e.nome}</span><span className="num">{cs.length}</span></h3>
-                        {cs.length ? cs.map((c) => <Cartao key={c.id} c={c} />) : <div className="vazio">Nenhum</div>}
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            );
-          })}
+      <div className="vista">
+        <div className="seg" role="tablist" aria-label="Forma de ver">
+          <button role="tab" aria-selected={modo === "quadro"} onClick={() => mudarModo("quadro")}>Quadro</button>
+          <button role="tab" aria-selected={modo === "lista"} onClick={() => mudarModo("lista")}>Lista do dia</button>
         </div>
+        {modo === "quadro" && (
+          <div className="fases" role="tablist" aria-label="Fase">
+            {FASES.map((fa) => {
+              const cs = lista.filter((c) => etapa(c.etapa).fase === fa.k);
+              const atras = cs.filter((c) => c.proxima_data && c.proxima_data <= hoje() && c.etapa !== "perdido").length;
+              return (
+                <button key={fa.k} role="tab" aria-selected={fase === fa.k} onClick={() => mudarFase(fa.k)}>
+                  {fa.nome} <span className="num">{cs.length}</span>
+                  {atras ? <span className="chip atraso">{atras} p/ hoje</span> : null}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
+
+      {modo === "quadro" ? (() => {
+        const cols = ETAPAS.filter((e) => e.fase === fase);
+        return (
+          <div className="board-wrap" tabIndex={0} aria-label="Quadro da fase">
+            <div className="grade" style={{ gridTemplateColumns: `repeat(${cols.length}, minmax(200px, 1fr))` }}>
+              {cols.map((e) => {
+                const cs = lista.filter((c) => c.etapa === e.k);
+                return (
+                  <div className="col" key={e.k}>
+                    <h3><span>{e.nome}</span><span className="num">{cs.length}</span></h3>
+                    {cs.length ? cs.map((c) => <Cartao key={c.id} c={c} />) : <div className="vazio">Nenhum</div>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })() : (
+        <div className="bloco" style={{ marginTop: 16, padding: 0 }}>
+          <div className="tbl-wrap">
+            <table className="lista">
+              <thead><tr><th>Quando</th><th>Escritório</th><th>Próxima ação</th><th>Etapa</th><th>Responsável</th></tr></thead>
+              <tbody>
+                {[...lista].sort((a, b) => {
+                  const pa = a.etapa === "perdido" ? 1 : 0, pb = b.etapa === "perdido" ? 1 : 0;
+                  if (pa !== pb) return pa - pb;
+                  return (a.proxima_data ?? "9999").localeCompare(b.proxima_data ?? "9999");
+                }).map((c) => (
+                  <tr key={c.id}>
+                    <td className="num">{c.etapa === "perdido" ? <span className="chip">{dataCurta(c.proxima_data)}</span> : <PrazoChip c={c} />}</td>
+                    <td><Link to={`/clientes/${c.id}`}><b>{c.escritorio}</b></Link>{c.teste && <span className="chip" style={{ marginLeft: 6 }}>teste</span>}</td>
+                    <td>{c.etapa === "perdido" ? `Motivo: ${c.motivo_perda}` : c.proxima_acao}</td>
+                    <td>{etapa(c.etapa).nome}</td>
+                    <td><span className="chip v">{c.responsavel}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </>
   );
 }
