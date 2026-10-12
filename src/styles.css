@@ -9,8 +9,9 @@
   --r: 10px;
   color-scheme: light;
 }
+/* Tema: "Automático" segue o computador; "Claro" e "Escuro" (data-theme no <html>) vencem a preferência do sistema. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #17181c; --surface: #202127; --sunk: #2a2b32; --line: #34353d;
     --ink: #ecebe6; --ink-2: #b7b7b2; --ink-3: #8c8d93;
     --lime: #c8e84f; --lime-ink: #17181c; --violet: #a99bff; --violet-soft: #2c2846; --on-violet: #17181c;
@@ -18,6 +19,14 @@
     color-scheme: dark;
   }
 }
+:root[data-theme="dark"] {
+    --bg: #17181c; --surface: #202127; --sunk: #2a2b32; --line: #34353d;
+    --ink: #ecebe6; --ink-2: #b7b7b2; --ink-3: #8c8d93;
+    --lime: #c8e84f; --lime-ink: #17181c; --violet: #a99bff; --violet-soft: #2c2846; --on-violet: #17181c;
+    --good: #6cc891; --good-soft: #1f3328; --warn: #e9a84c; --warn-soft: #3a2d18; --bad: #ef8478; --bad-soft: #3d221f;
+    color-scheme: dark;
+}
+.tema { width: auto; padding: 5px 8px; font-size: 13px; border-radius: 999px; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
 h1, h2, h3 { font-family: var(--f-display); font-weight: 800; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }

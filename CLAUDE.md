@@ -19,6 +19,7 @@ O documento de produto (ciclo de 13 etapas, módulos, fases) é a referência; e
 - Clientes fictícios têm `teste = true` (seed em `supabase/seed_teste.sql`) e podem ser escondidos no funil.
 - OAB: nenhum texto do sistema diz que a Convertea capta ou fecha clientes; quem fecha é o escritório.
 - LGPD: conversas de clientes de escritórios (fase 2) são dados pessoais. Acesso restrito, sem exportar para fora.
+- Tema claro/escuro escolhido por pessoa (seletor na barra, `data-theme` no <html>, salvo no navegador). Cores sempre por variável em `src/styles.css`, nunca fixas, para valer nos dois temas.
 - Textos da interface em português, falando com Pri e Mateus (não com o escritório). Sem travessões longos.
 
 ## Banco
