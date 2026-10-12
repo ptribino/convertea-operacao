@@ -193,7 +193,7 @@ begin
     proxima_acao, proxima_data, temperatura, pre_diagnostico_id)
   values (coalesce(nullif(r->>'escritorio',''), r->>'nome', 'Sem nome'), r->>'nome', r->>'whatsapp',
     nullif(r->>'email',''), r->>'area', 'pre', 'Primeiro contato pelo WhatsApp', current_date + 1,
-    coalesce(r->>'temperatura', r->>'temperatura_lead'), (r->>'id')::uuid)
+    initcap(coalesce(r->>'temperatura', r->>'temperatura_lead')), (r->>'id')::uuid)
   returning id into novo;
   insert into public.interacoes (cliente_id, tipo, texto) values (novo, 'sistema', 'Respondeu o pré-diagnóstico no site');
   return new;
