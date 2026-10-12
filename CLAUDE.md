@@ -1,7 +1,7 @@
 # Convertea Operação
 
 Sistema interno da Convertea (Pri e Mateus): funil de escritórios clientes, do pré-diagnóstico ao pós-venda.
-O documento de produto (ciclo de 13 etapas, módulos, fases) é a referência; este repositório implementa a fase 1.
+O documento de produto (ciclo de 13 etapas, módulos, fases) é a referência; este repositório implementa as fases 1 e 2.
 
 ## Stack
 - Vite + React 18 + TypeScript, React Router, TanStack Query. CSS próprio em `src/styles.css` (sem Tailwind).
@@ -25,9 +25,16 @@ O documento de produto (ciclo de 13 etapas, módulos, fases) é a referência; e
 - Migrações em `supabase/migrations`, idempotentes (podem rodar duas vezes). Aplicar depois das do site.
 - Ordem das etapas: `etapas_ordem()` no banco e `FLUXO` em `src/lib/etapas.ts`. Mudou uma, mude a outra.
 
+## Diagnóstico (fase 2, aba "Diagnóstico e relatório" da ficha)
+- Importa a planilha do escritório no formato de `public/modelo_diagnostico.xlsx` (abas Leads e Conversas), lida no navegador.
+  Nome e telefone dos leads NUNCA são lidos nem gravados.
+- Cálculos em `src/lib/diagnostico.ts` (funil, Declarado × Real, impacto). Notas são da equipe; o gatilho `validar_nota`
+  recusa nota sem evidência. Etapas avançam sozinhas: importação → Dados recebidos; 1ª nota → Em análise;
+  gerar relatório → Relatório em revisão; entregar (checklist completo) → Relatório entregue.
+- Relatório em `/relatorio/:id`, papel claro mesmo no tema escuro, salvo em PDF pelo navegador. Não cita produtos.
+
 ## Próximas fases (documento de produto)
-2. Importação da planilha de leads e das conversas, funil do escritório e Declarado × Real.
-3. Notas das 8 áreas com evidência, relatório e Oportunidades (catálogo de produtos por gargalo).
+3. Oportunidades (catálogo de produtos por gargalo, a partir das notas).
 4. Implementação, acompanhamento mensal (antes × depois) e IA sugerindo triagem e notas.
 A tabela de análises deve servir ao diagnóstico E às medições mensais (linha de base comparável).
 

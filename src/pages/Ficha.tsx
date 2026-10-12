@@ -8,6 +8,7 @@ import { ETAPAS, FLUXO, MOTIVOS_PERDA, etapa, jaPagou, proximaEtapa } from "../l
 import type { Cliente } from "../lib/types";
 import { PrazoChip, brl, dataCurta, dataHora, hoje, useToast } from "../components/ui";
 import { mensagemErro } from "../lib/supabase";
+import Diagnostico from "./Diagnostico";
 
 const FASE_NOME = { venda: "Venda", diag: "Diagnóstico", pos: "Pós-venda" } as const;
 
@@ -22,17 +23,21 @@ const PRE_CAMPOS: [string, string][] = [["area", "Área"], ["volume", "Contatos 
 
 const txt = (v: unknown) => (Array.isArray(v) ? v.join(", ") : v == null || v === "" ? "" : String(v));
 
-type Aba = "resumo" | "pre" | "quest" | "analise" | "relatorio" | "ops" | "pos";
+type Aba = "resumo" | "pre" | "quest" | "diag" | "ops" | "pos";
 const ABAS: { k: Aba; n: string; fase?: string }[] = [
   { k: "resumo", n: "Resumo" }, { k: "pre", n: "Pré-diagnóstico" }, { k: "quest", n: "Questionário" },
-  { k: "analise", n: "Análise", fase: "fase 2" }, { k: "relatorio", n: "Relatório", fase: "fase 3" },
-  { k: "ops", n: "Oportunidades", fase: "fase 3" }, { k: "pos", n: "Pós-venda", fase: "fase 4" },
+  { k: "diag", n: "Diagnóstico e relatório" },
+  { k: "ops", n: "Oportunidades", fase: "em breve" }, { k: "pos", n: "Pós-venda", fase: "em breve" },
 ];
 
 export default function Ficha() {
   const { id = "" } = useParams();
   const c = useCliente(id);
-  const [aba, setAba] = useState<Aba>("resumo");
+  const [aba, setAba] = useState<Aba>(() => {
+    try { const v = sessionStorage.getItem("op-aba-" + id); if (v) return v as Aba; } catch { /* ignora */ }
+    return "resumo";
+  });
+  const trocarAba = (k: Aba) => { setAba(k); try { sessionStorage.setItem("op-aba-" + id, k); } catch { /* ignora */ } };
   if (c.isLoading) return <p className="sub">Carregando…</p>;
   if (c.error || !c.data) return <div className="erro">{c.error ? mensagemErro(c.error) : "Cliente não encontrado."}</div>;
   const cl = c.data;
@@ -60,7 +65,7 @@ export default function Ficha() {
       )}
       <div className="tabs" role="tablist">
         {ABAS.map((a) => (
-          <button key={a.k} role="tab" id={`aba-${a.k}`} aria-selected={aba === a.k} onClick={() => setAba(a.k)}>
+          <button key={a.k} role="tab" id={`aba-${a.k}`} aria-selected={aba === a.k} onClick={() => trocarAba(a.k)}>
             {a.n}{a.fase ? <span className="chip" style={{ marginLeft: 6 }}>{a.fase}</span> : null}
           </button>
         ))}
@@ -69,8 +74,9 @@ export default function Ficha() {
         {aba === "resumo" && <Resumo key={cl.atualizado_em} cl={cl} />}
         {aba === "pre" && <PreDiag cl={cl} />}
         {aba === "quest" && <Questionario cl={cl} />}
+        {aba === "diag" && <Diagnostico cl={cl} />}
         {ABAS.find((a) => a.k === aba)?.fase && (
-          <div className="aviso">Esta parte entra na {ABAS.find((a) => a.k === aba)?.fase} do sistema, conforme o documento de produto. O protótipo mostra como ela vai funcionar.</div>
+          <div className="aviso">Esta parte ainda vai ser construída, conforme o documento de produto. O protótipo mostra como ela vai funcionar.</div>
         )}
       </div>
     </>

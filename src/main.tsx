@@ -12,6 +12,7 @@ import Ficha from "./pages/Ficha";
 import NovoCliente from "./pages/NovoCliente";
 import Questionarios from "./pages/Questionarios";
 import Painel from "./pages/Painel";
+import Relatorio from "./pages/Relatorio";
 import "./styles.css";
 
 const qc = new QueryClient({ defaultOptions: { queries: { staleTime: 15_000, retry: 1 } } });
@@ -40,6 +41,7 @@ function App() {
         <Route path="clientes/:id" element={<Ficha />} />
         <Route path="questionarios" element={<Questionarios />} />
         <Route path="painel" element={<Painel />} />
+        <Route path="relatorio/:id" element={<Relatorio />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
