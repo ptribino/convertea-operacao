@@ -6,7 +6,8 @@ import type { Session } from "@supabase/supabase-js";
 import { configurado, supabase } from "./lib/supabase";
 import { ToastProvider } from "./components/ui";
 import Layout from "./components/Layout";
-import Login from "./pages/Login";
+import Login, { DefinirSenha } from "./pages/Login";
+import Conta from "./pages/Conta";
 import Funil from "./pages/Funil";
 import Ficha from "./pages/Ficha";
 import NovoCliente from "./pages/NovoCliente";
@@ -19,9 +20,13 @@ const qc = new QueryClient({ defaultOptions: { queries: { staleTime: 15_000, ret
 
 function App() {
   const [sessao, setSessao] = useState<Session | null | undefined>(undefined);
+  const [recuperando, setRecuperando] = useState(false);
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSessao(data.session));
-    const { data } = supabase.auth.onAuthStateChange((_e, s) => setSessao(s));
+    const { data } = supabase.auth.onAuthStateChange((evento, s) => {
+      setSessao(s);
+      if (evento === "PASSWORD_RECOVERY") setRecuperando(true); // abriu o link de "Esqueci a senha"
+    });
     return () => data.subscription.unsubscribe();
   }, []);
 
@@ -32,6 +37,7 @@ function App() {
     );
   if (sessao === undefined) return null;
   if (!sessao) return <Login />;
+  if (recuperando) return <div className="login"><DefinirSenha titulo="Criar nova senha" aoConcluir={() => setRecuperando(false)} /></div>;
 
   return (
     <Routes>
@@ -42,6 +48,7 @@ function App() {
         <Route path="questionarios" element={<Questionarios />} />
         <Route path="painel" element={<Painel />} />
         <Route path="relatorio/:id" element={<Relatorio />} />
+        <Route path="conta" element={<Conta />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

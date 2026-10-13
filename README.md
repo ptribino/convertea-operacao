@@ -19,7 +19,7 @@ questionário do diagnóstico e, nas próximas fases, análise, relatório e pó
    no SQL Editor. Para ter os escritórios fictícios, rode também `supabase/seed_teste.sql`
    (apague depois com `delete from public.clientes where teste;`).
 2. **Login.** Em Authentication > URL Configuration, coloque o endereço do sistema no Netlify em
-   Site URL e em Redirect URLs. O login é por link no e-mail; só os e-mails da tabela `equipe` entram.
+   Site URL e em Redirect URLs. No primeiro acesso a pessoa entra pelo link no e-mail e cria uma senha (aviso no funil ou clicando no próprio nome); depois entra com e-mail e senha. Só os e-mails da tabela `equipe` entram. Endereço: https://operacao.convertea.com.br
 3. **Netlify.** Novo site a partir deste repositório. Em Environment variables, crie
    `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` (Project Settings > API, chave pública).
 4. Para rodar no computador: copie `.env.example` para `.env.local`, preencha e rode `npm install` e `npm run dev`.

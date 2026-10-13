@@ -12,6 +12,7 @@ O documento de produto (ciclo de 13 etapas, módulos, fases) é a referência; e
 ## Regras que não podem quebrar
 - **Etapa só muda pelas funções do banco** `mover_etapa` e `confirmar_pagamento`. Um gatilho recusa update direto
   em `clientes.etapa`. Regras: perdido exige motivo; do diagnóstico em diante exige proposta paga.
+- Login: e-mail e senha (principal), link por e-mail (primeiro acesso) e "Esqueci a senha". A senha é criada em /conta; `user_metadata.tem_senha` controla o aviso no funil.
 - **Acesso só para a tabela `equipe`** (RLS com `is_equipe()`). Nunca usar a chave service_role no front.
 - **O site continua insert-only** em `pre_diagnosticos` e `diagnosticos`: não dar select a `anon`.
 - Pré-diagnóstico do site vira cliente sozinho (gatilho). Questionário liga ao cliente por WhatsApp (11 últimos

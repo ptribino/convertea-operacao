@@ -46,7 +46,7 @@ export default function Layout() {
           <NavLink to="/questionarios">Questionários{n ? ` (${n})` : ""}</NavLink>
           <NavLink to="/painel">Painel</NavLink>
         </nav>
-        <div className="quem"><SeletorTema /><span>{eu.data?.nome}</span><button className="btn peq" onClick={() => supabase.auth.signOut()}>Sair</button></div>
+        <div className="quem"><SeletorTema /><NavLink to="/conta" className="quem-nome" title="Minha conta e senha">{eu.data?.nome}</NavLink><button className="btn peq" onClick={() => supabase.auth.signOut()}>Sair</button></div>
       </div></header>
       <main><Outlet /></main>
     </>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useClientes } from "../lib/api";
+import { useClientes, useEu } from "../lib/api";
 import { ETAPAS, FASES, etapa, type Fase } from "../lib/etapas";
 import type { Cliente } from "../lib/types";
 import { PrazoChip, dataCurta, hoje } from "../components/ui";
@@ -31,6 +31,7 @@ function Cartao({ c }: { c: Cliente }) {
 
 export default function Funil() {
   const q = useClientes();
+  const eu = useEu();
   const [teste, setTeste] = useState(() => lerPref("op-teste", "1") === "1");
   const [resp, setResp] = useState(() => lerPref("op-resp", ""));
   const [busca, setBusca] = useState("");
@@ -50,6 +51,12 @@ export default function Funil() {
 
   return (
     <>
+      {eu.data && !eu.data.temSenha && (
+        <div className="aviso" style={{ marginBottom: 18, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+          <span>Crie uma senha para entrar sem precisar do link por e-mail.</span>
+          <Link to="/conta" className="btn peq pri">Criar senha</Link>
+        </div>
+      )}
       <div className="ficha-top">
         <div>
           <div className="eyebrow">Funil Convertea</div>

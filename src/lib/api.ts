@@ -145,6 +145,6 @@ export const useEu = () =>
       const { data } = await supabase.auth.getUser();
       const email = data.user?.email?.toLowerCase() ?? "";
       const r = await supabase.from("equipe").select("nome").eq("email", email).maybeSingle();
-      return { email, nome: (r.data?.nome as string | undefined) ?? null };
+      return { email, nome: (r.data?.nome as string | undefined) ?? null, temSenha: !!data.user?.user_metadata?.tem_senha };
     },
   });
