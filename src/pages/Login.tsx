@@ -41,7 +41,7 @@ export default function Login() {
         ) : (
           <>
             <p className="lead">
-              {modo === "senha" ? "Sistema interno. Entre com o e-mail da equipe e a sua senha."
+              {modo === "senha" ? <>Sistema interno. Entre com o e-mail da equipe e a sua senha.<span className="aviso-primeiro"><b>Primeiro acesso?</b> Ainda não há senha. Entre pelo link por e-mail e crie a senha depois, dentro do sistema.</span></>
                 : modo === "link" ? "Receba um link de acesso no e-mail. Use no primeiro acesso ou se ainda não criou uma senha."
                 : "Informe o e-mail da equipe para receber um link e criar uma nova senha."}
             </p>

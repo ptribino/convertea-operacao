@@ -231,6 +231,7 @@ tr:last-child td { border-bottom: 0; }
 /* números grandes na fonte de títulos: sem algarismos tabulares, que abrem espaço em volta de vírgula e ponto */
 .big, .rel-kpis b, .rel-imp b { font-variant-numeric: normal; }
 
+.aviso-primeiro { display: block; margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: var(--violet-soft); color: var(--ink); font-size: 14px; line-height: 1.45; }
 .link-btn { background: none; border: 0; padding: 0; color: var(--violet); font-weight: 600; font-size: 13.5px; text-decoration: underline; text-underline-offset: 3px; }
 .quem-nome { color: var(--ink-2); text-decoration: none; font-weight: 600; }
 .quem-nome:hover, .quem-nome.active { color: var(--violet); }
